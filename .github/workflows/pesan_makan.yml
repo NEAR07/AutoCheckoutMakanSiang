@@ -2,20 +2,20 @@ name: Automasi Pesan Makan Siang
 
 on:
   schedule:
-    # Jadwal: Berjalan setiap hari (Senin-Minggu) pada pukul 12:00 UTC (19:00 WIB)
+    # Berjalan setiap hari jam 19:00 WIB (12:00 UTC)
     - cron: '0 12 * * *'
-  workflow_dispatch: # Memunculkan tombol agar bisa dijalankan manual kapan saja
+  workflow_dispatch:
 
 jobs:
   run-bot:
-    runs-on: ubuntu-latest # Server cloud gratis dari GitHub
+    runs-on: ubuntu-latest
 
     steps:
     - name: Mengambil kode dari repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Menyiapkan Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -25,4 +25,7 @@ jobs:
         pip install selenium
 
     - name: Menjalankan Bot Pesan Makan
+      env:
+        LOGIN_NIP: ${{ secrets.LOGIN_NIP }}
+        LOGIN_PASS: ${{ secrets.LOGIN_PASS }}
       run: python main.py
