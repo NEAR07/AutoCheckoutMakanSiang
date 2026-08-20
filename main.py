@@ -7,22 +7,22 @@ import traceback
 import os
 import datetime
 
-# 1. Konfigurasi Kredensial dari Environment Variables / Secrets GitHub
+# 1. Kredensial
 LOGIN_NIP = os.getenv("LOGIN_NIP", "LOGIN_NIP_1")
 LOGIN_PASS = os.getenv("LOGIN_PASS", "PASSWORD_NIP_1")
 
-# 2. Konfigurasi Browser (Headless Mode untuk GitHub Actions Runner)
+# 2. Konfigurasi Browser
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--window-size=1920,1080')
+options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 driver = webdriver.Chrome(options=options)
-wait = WebDriverWait(driver, 10)
+wait = WebDriverWait(driver, 15)
 
 try:
-    # ==========================================
     # FASE 1: LOGIN
-    # ==========================================
     print("Membuka halaman login...")
     driver.get("https://makan.sdm-pal.web.id/login")
 
@@ -38,22 +38,23 @@ try:
     
     time.sleep(3)
 
-    # ==========================================
-    # FASE 2: NAVIGASI KE HALAMAN PESANAN (Bulan Dinamis)
-    # ==========================================
+    # FASE 2: NAVIGASI KE HALAMAN PESANAN
     current_month = datetime.datetime.now().strftime("%Y-%m")
     target_url = f"https://makan.sdm-pal.web.id/portal/order?meal_type=makan_siang&month={current_month}"
     print(f"Navigasi ke halaman pesanan: {target_url}")
     driver.get(target_url)
 
-    # ==========================================
     # FASE 3: EKSTRAKSI & PROSES TANGGAL KOSONG
-    # ==========================================
     print("Mencari tanggal yang belum dipesan...")
-    unordered_dates_xpath = "//div[contains(@class, 'bg-white') and @data-date]" 
     
-    unordered_elements = wait.until(EC.presence_of_all_elements_located((By.XPATH, unordered_dates_xpath)))
-    target_dates = [el.get_attribute("data-date") for el in unordered_elements]
+    # Tunggu minimal 1 elemen tanggal termuat di halaman (baik bg-green atau bg-white)
+    wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-date]")))
+    
+    # Menggunakan find_elements agar aman mengembalikan [] tanpa TimeoutException
+    unordered_dates_xpath = "//div[contains(@class, 'bg-white') and @data-date]"
+    unordered_elements = driver.find_elements(By.XPATH, unordered_dates_xpath)
+    
+    target_dates = [el.get_attribute("data-date") for el in unordered_elements if el.get_attribute("data-date")]
     
     if not target_dates:
         print("Semua pesanan untuk bulan ini sudah terisi!")
