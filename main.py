@@ -20,10 +20,10 @@ try:
 
     print("Mengisi kredensial...")
     email_field = wait.until(EC.presence_of_element_located((By.NAME, "email")))
-    email_field.send_keys("024116908") # Ganti NIP
+    email_field.send_keys("LOGIN_NIP_1") # Ganti NIP
 
     password_field = driver.find_element(By.NAME, "password")
-    password_field.send_keys("@MieAyam02")   # Ganti Password
+    password_field.send_keys("PASSWORD_NIP_1")   # Ganti Password
 
     login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
     login_button.click()
