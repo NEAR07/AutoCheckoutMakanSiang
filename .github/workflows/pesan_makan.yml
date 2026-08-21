@@ -26,6 +26,6 @@ jobs:
 
     - name: Menjalankan Bot Pesan Makan
       env:
-        LOGIN_NIP_1: ${{ secrets.LOGIN_NIP_1 }}
-        LOGIN_PASS_1: ${{ secrets.LOGIN_PASS_1 }}
+        LOGIN_NIP: ${{ secrets.LOGIN_NIP_1 }}
+        LOGIN_PASS: ${{ secrets.LOGIN_PASS_1 }}
       run: python main.py
