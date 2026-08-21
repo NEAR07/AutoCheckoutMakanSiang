@@ -10,7 +10,9 @@ import datetime
 # 1. Kredensial
 LOGIN_NIP = os.getenv("LOGIN_NIP_1")
 LOGIN_PASS = os.getenv("PASSWORD_NIP_1")
-
+if not LOGIN_NIP or not LOGIN_PASS:
+    raise ValueError("ERROR: LOGIN_NIP_1 atau PASSWORD_NIP_1 tidak terbaca dari Secrets GitHub!")
+    
 # 2. Konfigurasi Browser
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
