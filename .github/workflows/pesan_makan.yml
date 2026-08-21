@@ -28,4 +28,6 @@ jobs:
       env:
         LOGIN_NIP_1: ${{ secrets.LOGIN_NIP_1 }}
         PASSWORD_NIP_1: ${{ secrets.PASSWORD_NIP_1 }}
+        LOGIN_NIP_2: ${{ secrets.LOGIN_NIP_2 }}
+        PASSWORD_NIP_2: ${{ secrets.PASSWORD_NIP_2 }}
       run: python main.py
