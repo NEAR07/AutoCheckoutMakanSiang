@@ -8,8 +8,8 @@ import os
 import datetime
 
 # 1. Kredensial
-LOGIN_NIP = os.getenv("LOGIN_NIP", "LOGIN_NIP_1")
-LOGIN_PASS = os.getenv("LOGIN_PASS", "PASSWORD_NIP_1")
+LOGIN_NIP = os.getenv("LOGIN_NIP_1")
+LOGIN_PASS = os.getenv("PASSWORD_NIP_1")
 
 # 2. Konfigurasi Browser
 options = webdriver.ChromeOptions()
