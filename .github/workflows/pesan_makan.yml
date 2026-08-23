@@ -2,9 +2,6 @@ name: Automasi Pesan Makan Siang
 
 on:
   workflow_dispatch:
-  schedule:
-    # Berjalan setiap hari jam 19:00 WIB (12:00 UTC)
-    - cron: '0 12 * * *'
 
 jobs:
   run-bot:
