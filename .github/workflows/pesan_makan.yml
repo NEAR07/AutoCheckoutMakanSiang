@@ -21,10 +21,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install selenium
 
-    - name: Menjalankan Bot Pesan Makan
+    - name: Menjalankan Bot Pesan Makan (dengan Auto-Retry)
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 5
+        max_attempts: 3
+        retry_on: error
+        command: python main.py
       env:
         LOGIN_NIP_1: ${{ secrets.LOGIN_NIP_1 }}
         PASSWORD_NIP_1: ${{ secrets.PASSWORD_NIP_1 }}
         LOGIN_NIP_2: ${{ secrets.LOGIN_NIP_2 }}
         PASSWORD_NIP_2: ${{ secrets.PASSWORD_NIP_2 }}
-      run: python main.py
+
+    - name: Upload Bukti Error (Screenshot & Log)
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: error-artifacts
+        path: |
+          *.png
+          *.html
