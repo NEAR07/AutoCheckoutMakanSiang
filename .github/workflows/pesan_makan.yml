@@ -33,6 +33,15 @@ jobs:
         PASSWORD_NIP_1: ${{ secrets.PASSWORD_NIP_1 }}
         LOGIN_NIP_2: ${{ secrets.LOGIN_NIP_2 }}
         PASSWORD_NIP_2: ${{ secrets.PASSWORD_NIP_2 }}
+        LOGIN_NIP_3: ${{ secrets.LOGIN_NIP_3 }}
+        PASSWORD_NIP_3: ${{ secrets.PASSWORD_NIP_3 }}
+        LOGIN_NIP_4: ${{ secrets.LOGIN_NIP_4 }}
+        PASSWORD_NIP_4: ${{ secrets.PASSWORD_NIP_4 }}
+        LOGIN_NIP_5: ${{ secrets.LOGIN_NIP_5 }}
+        PASSWORD_NIP_5: ${{ secrets.PASSWORD_NIP_5 }}
+        LOGIN_NIP_6: ${{ secrets.LOGIN_NIP_6 }}
+        PASSWORD_NIP_6: ${{ secrets.PASSWORD_NIP_6 }}
+
 
     - name: Upload Bukti Error (Screenshot & Log)
       if: failure()
