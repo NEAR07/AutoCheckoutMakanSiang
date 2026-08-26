@@ -29,17 +29,17 @@ jobs:
         retry_on: error
         command: python main.py
       env:
-        LOGIN_NIP_1: ${{ secrets.LOGIN_NIP_1 }}
+        LOGIN_NIP_1: ${{ secrets.LOGIN_NIP_1 }} #Nizhar
         PASSWORD_NIP_1: ${{ secrets.PASSWORD_NIP_1 }}
-        LOGIN_NIP_2: ${{ secrets.LOGIN_NIP_2 }}
+        LOGIN_NIP_2: ${{ secrets.LOGIN_NIP_2 }} #Roni
         PASSWORD_NIP_2: ${{ secrets.PASSWORD_NIP_2 }}
-        LOGIN_NIP_3: ${{ secrets.LOGIN_NIP_3 }}
+        LOGIN_NIP_3: ${{ secrets.LOGIN_NIP_3 }} #Irwan
         PASSWORD_NIP_3: ${{ secrets.PASSWORD_NIP_3 }}
-        LOGIN_NIP_4: ${{ secrets.LOGIN_NIP_4 }}
+        LOGIN_NIP_4: ${{ secrets.LOGIN_NIP_4 }} #Ayu
         PASSWORD_NIP_4: ${{ secrets.PASSWORD_NIP_4 }}
-        LOGIN_NIP_5: ${{ secrets.LOGIN_NIP_5 }}
+        LOGIN_NIP_5: ${{ secrets.LOGIN_NIP_5 }} #Yusuf
         PASSWORD_NIP_5: ${{ secrets.PASSWORD_NIP_5 }}
-        LOGIN_NIP_6: ${{ secrets.LOGIN_NIP_6 }}
+        LOGIN_NIP_6: ${{ secrets.LOGIN_NIP_6 }} #Yadi
         PASSWORD_NIP_6: ${{ secrets.PASSWORD_NIP_6 }}
 
 
