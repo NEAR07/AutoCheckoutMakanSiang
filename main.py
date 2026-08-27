@@ -37,19 +37,18 @@ def proses_pesanan_akun(nip, password):
     options.add_argument('--disable-gpu')
     options.add_argument('--window-size=1920,1080')
     options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
-    options.page_load_strategy = 'eager'
-
+    
+    # Hapus opsi 'eager' agar bot sabar menunggu web loading sampai benar-benar tuntas
     driver = webdriver.Chrome(options=options)
-    driver.set_page_load_timeout(30)
-    wait = WebDriverWait(driver, 15)
+    
+    # PERBESAR TIMEOUT KARENA WEB MUNGKIN LAMBAT
+    driver.set_page_load_timeout(60) 
+    wait = WebDriverWait(driver, 20)
 
     try:
         # FASE 1: LOGIN
         print("Membuka halaman login...")
-        try:
-            driver.get("https://makan.sdm-pal.web.id/login")
-        except Exception:
-            print("Peringatan: Page load timeout, melanjutkan eksekusi DOM...")
+        driver.get("https://makan.sdm-pal.web.id/login")
 
         print("Mengisi kredensial...")
         email_field = wait.until(EC.presence_of_element_located((By.NAME, "email")))
@@ -68,10 +67,7 @@ def proses_pesanan_akun(nip, password):
         target_url = f"https://makan.sdm-pal.web.id/portal/order?meal_type=makan_siang&month={current_month}"
         print(f"Navigasi ke halaman pesanan: {target_url}")
         
-        try:
-            driver.get(target_url)
-        except Exception:
-            print("Peringatan: Page load timeout saat navigasi, melanjutkan...")
+        driver.get(target_url)
 
         # FASE 3: EKSTRAKSI & PROSES TANGGAL KOSONG
         print("Mencari tanggal yang belum dipesan...")
@@ -108,9 +104,27 @@ def proses_pesanan_akun(nip, password):
                     print(f"x Gagal memproses tanggal {tgl}")
                     print(traceback.format_exc())
 
+    # --- BAGIAN INI SANGAT PENTING (JANGAN TERHAPUS) ---
+    except Exception as e:
+        print(f"⚠️ GAGAL memproses keseluruhan akun {nip}!")
+        print(f"Detail Error: {str(e)}")
+        
+        # Simpan Screenshot & HTML untuk artifact GitHub Actions
+        nama_file = f"error_akun_{nip}"
+        try:
+            driver.save_screenshot(f"{nama_file}.png")
+            with open(f"{nama_file}.html", "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
+            print("📸 Screenshot & HTML halaman error berhasil disimpan. (Cek di tab Artifacts GitHub)")
+        except Exception as ss_e:
+            print(f"Gagal mengambil screenshot: {ss_e}")
+
     finally:
         print(f"Selesai memproses akun {nip}.")
-        driver.quit()
+        try:
+            driver.quit()
+        except:
+            pass
 
 # 3. Eksekusi Perulangan untuk Semua Akun
 for acc in accounts:
