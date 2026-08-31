@@ -41,6 +41,8 @@ jobs:
         PASSWORD_NIP_5: ${{ secrets.PASSWORD_NIP_5 }}
         LOGIN_NIP_6: ${{ secrets.LOGIN_NIP_6 }} #Yadi
         PASSWORD_NIP_6: ${{ secrets.PASSWORD_NIP_6 }}
+        LOGIN_NIP_7: ${{ secrets.LOGIN_NIP_7 }} #Dimas
+        PASSWORD_NIP_7: ${{ secrets.PASSWORD_NIP_7 }}
 
 
     - name: Upload Bukti Error (Screenshot & Log)
