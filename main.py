@@ -61,15 +61,16 @@ def proses_pesanan_akun(nip, password):
         
         time.sleep(3)
 
-        # MENGHITUNG BULAN INI DAN BULAN DEPAN
+        # MENGHITUNG BULAN INI DAN BULAN DEPAN (DIPERBAIKI)
         now = datetime.datetime.now()
         current_month_str = now.strftime("%Y-%m")
         
-        # Logika bulan depan (handle pergantian tahun jika Desember)
+        # Logika bulan depan (Set tanggal secara manual ke tanggal 1 agar terhindar dari error tanggal 31)
         if now.month == 12:
-            next_month_date = now.replace(year=now.year + 1, month=1)
+            next_month_date = datetime.datetime(now.year + 1, 1, 1)
         else:
-            next_month_date = now.replace(month=now.month + 1)
+            next_month_date = datetime.datetime(now.year, now.month + 1, 1)
+            
         next_month_str = next_month_date.strftime("%Y-%m")
 
         months_to_process = [current_month_str, next_month_str]
