@@ -38,7 +38,6 @@ def proses_pesanan_akun(nip, password):
     options.add_argument('--window-size=1920,1080')
     options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
     
-    # Hapus opsi 'eager' agar bot sabar menunggu web loading sampai benar-benar tuntas
     driver = webdriver.Chrome(options=options)
     
     # PERBESAR TIMEOUT KARENA WEB MUNGKIN LAMBAT
@@ -62,49 +61,69 @@ def proses_pesanan_akun(nip, password):
         
         time.sleep(3)
 
-        # FASE 2: NAVIGASI KE HALAMAN PESANAN
-        current_month = datetime.datetime.now().strftime("%Y-%m")
-        target_url = f"https://makan.sdm-pal.web.id/portal/order?meal_type=makan_siang&month={current_month}"
-        print(f"Navigasi ke halaman pesanan: {target_url}")
+        # MENGHITUNG BULAN INI DAN BULAN DEPAN
+        now = datetime.datetime.now()
+        current_month_str = now.strftime("%Y-%m")
         
-        driver.get(target_url)
-
-        # FASE 3: EKSTRAKSI & PROSES TANGGAL KOSONG
-        print("Mencari tanggal yang belum dipesan...")
-        wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-date]")))
-        
-        unordered_dates_xpath = "//div[contains(@class, 'bg-white') and @data-date]"
-        unordered_elements = driver.find_elements(By.XPATH, unordered_dates_xpath)
-        
-        target_dates = [el.get_attribute("data-date") for el in unordered_elements if el.get_attribute("data-date")]
-        
-        if not target_dates:
-            print(f"Semua pesanan minggu ini untuk NIP {nip} sudah terisi!")
+        # Logika bulan depan (handle pergantian tahun jika Desember)
+        if now.month == 12:
+            next_month_date = now.replace(year=now.year + 1, month=1)
         else:
-            print(f"Ditemukan {len(target_dates)} hari belum dipesan untuk NIP {nip}: {target_dates}")
-            
-            for tgl in target_dates:
-                try:
-                    print(f"Memproses tanggal: {tgl}")
-                    date_xpath = f"//div[@data-date='{tgl}']"
-                    date_el = wait.until(EC.presence_of_element_located((By.XPATH, date_xpath)))
-                    
-                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_el)
-                    time.sleep(1)
-                    driver.execute_script("arguments[0].click();", date_el)
-                    
-                    btn_pesan_xpath = "//button[.//span[contains(text(), 'Pesan Sekarang')]]"
-                    pesan_sekarang_btn = wait.until(EC.presence_of_element_located((By.XPATH, btn_pesan_xpath)))
-                    
-                    driver.execute_script("arguments[0].click();", pesan_sekarang_btn)
-                    print(f"-> Berhasil pesan tanggal {tgl}")
-                    time.sleep(3) 
-                    
-                except Exception:
-                    print(f"x Gagal memproses tanggal {tgl}")
-                    print(traceback.format_exc())
+            next_month_date = now.replace(month=now.month + 1)
+        next_month_str = next_month_date.strftime("%Y-%m")
 
-    # --- BAGIAN INI SANGAT PENTING (JANGAN TERHAPUS) ---
+        months_to_process = [current_month_str, next_month_str]
+
+        # LOOPING UNTUK BULAN INI DAN BULAN DEPAN
+        for target_month in months_to_process:
+            print(f"\n--- [ Mengecek Pesanan Untuk Bulan: {target_month} ] ---")
+            
+            # FASE 2: NAVIGASI KE HALAMAN PESANAN
+            target_url = f"https://makan.sdm-pal.web.id/portal/order?meal_type=makan_siang&month={target_month}"
+            print(f"Navigasi ke: {target_url}")
+            driver.get(target_url)
+
+            # FASE 3: EKSTRAKSI & PROSES TANGGAL KOSONG
+            print(f"Mencari tanggal yang belum dipesan untuk {target_month}...")
+            try:
+                wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-date]")))
+            except Exception:
+                # Menangkap jika kalender bulan depan belum ada/belum di-generate oleh web
+                print(f"Kalender untuk bulan {target_month} belum tersedia atau halaman kosong. Melewati...")
+                continue
+            
+            unordered_dates_xpath = "//div[contains(@class, 'bg-white') and @data-date]"
+            unordered_elements = driver.find_elements(By.XPATH, unordered_dates_xpath)
+            
+            target_dates = [el.get_attribute("data-date") for el in unordered_elements if el.get_attribute("data-date")]
+            
+            if not target_dates:
+                print(f"Semua pesanan untuk bulan {target_month} sudah terisi penuh!")
+            else:
+                print(f"Ditemukan {len(target_dates)} hari belum dipesan pada {target_month}: {target_dates}")
+                
+                for tgl in target_dates:
+                    try:
+                        print(f"Memproses tanggal: {tgl}")
+                        date_xpath = f"//div[@data-date='{tgl}']"
+                        date_el = wait.until(EC.presence_of_element_located((By.XPATH, date_xpath)))
+                        
+                        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_el)
+                        time.sleep(1)
+                        driver.execute_script("arguments[0].click();", date_el)
+                        
+                        btn_pesan_xpath = "//button[.//span[contains(text(), 'Pesan Sekarang')]]"
+                        pesan_sekarang_btn = wait.until(EC.presence_of_element_located((By.XPATH, btn_pesan_xpath)))
+                        
+                        driver.execute_script("arguments[0].click();", pesan_sekarang_btn)
+                        print(f"-> Berhasil pesan tanggal {tgl}")
+                        time.sleep(3) 
+                        
+                    except Exception:
+                        print(f"x Gagal memproses tanggal {tgl}")
+                        print(traceback.format_exc())
+
+    # BAGIAN PENANGANAN ERROR GLOBAL AKUN
     except Exception as e:
         print(f"⚠️ GAGAL memproses keseluruhan akun {nip}!")
         print(f"Detail Error: {str(e)}")
