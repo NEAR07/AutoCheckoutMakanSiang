@@ -36,12 +36,23 @@ def proses_pesanan_akun(nip, password):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
     options.add_argument('--window-size=1920,1080')
+    
+    # [TAMBAHAN] Optimasi Resource & Anti-Bot
+    options.add_argument('--disable-software-rasterizer')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-blink-features=AutomationControlled') # Menyembunyikan status bot Selenium
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    
     options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
+    
+    # [TAMBAHAN] Mempercepat loading page dengan mengabaikan aset gambar/CSS yang berat
+    options.page_load_strategy = 'eager' 
     
     driver = webdriver.Chrome(options=options)
     
     # PERBESAR TIMEOUT KARENA WEB MUNGKIN LAMBAT
-    driver.set_page_load_timeout(60) 
+    driver.set_page_load_timeout(90) # Dinaikkan dari 60 ke 90 detik
     wait = WebDriverWait(driver, 20)
 
     try:
@@ -61,11 +72,10 @@ def proses_pesanan_akun(nip, password):
         
         time.sleep(3)
 
-        # MENGHITUNG BULAN INI DAN BULAN DEPAN (DIPERBAIKI)
+        # MENGHITUNG BULAN INI DAN BULAN DEPAN
         now = datetime.datetime.now()
         current_month_str = now.strftime("%Y-%m")
         
-        # Logika bulan depan (Set tanggal secara manual ke tanggal 1 agar terhindar dari error tanggal 31)
         if now.month == 12:
             next_month_date = datetime.datetime(now.year + 1, 1, 1)
         else:
@@ -89,7 +99,6 @@ def proses_pesanan_akun(nip, password):
             try:
                 wait.until(EC.presence_of_element_located((By.XPATH, "//div[@data-date]")))
             except Exception:
-                # Menangkap jika kalender bulan depan belum ada/belum di-generate oleh web
                 print(f"Kalender untuk bulan {target_month} belum tersedia atau halaman kosong. Melewati...")
                 continue
             
@@ -124,12 +133,11 @@ def proses_pesanan_akun(nip, password):
                         print(f"x Gagal memproses tanggal {tgl}")
                         print(traceback.format_exc())
 
-    # BAGIAN PENANGANAN ERROR GLOBAL AKUN
     except Exception as e:
         print(f"⚠️ GAGAL memproses keseluruhan akun {nip}!")
         print(f"Detail Error: {str(e)}")
         
-        # Simpan Screenshot & HTML untuk artifact GitHub Actions
+        # Simpan Screenshot & HTML
         nama_file = f"error_akun_{nip}"
         try:
             driver.save_screenshot(f"{nama_file}.png")
@@ -147,5 +155,12 @@ def proses_pesanan_akun(nip, password):
             pass
 
 # 3. Eksekusi Perulangan untuk Semua Akun
-for acc in accounts:
+for index, acc in enumerate(accounts):
     proses_pesanan_akun(acc["nip"], acc["pass"])
+    
+    # [TAMBAHAN] Jeda antar akun agar server tidak menganggap serangan spam/DDoS
+    # Jeda tidak perlu dilakukan di akun terakhir
+    if index < len(accounts) - 1:
+        jeda_detik = 15
+        print(f"\n⏳ Menunggu {jeda_detik} detik sebelum lanjut ke akun berikutnya (Mencegah Limit IP Server)...")
+        time.sleep(jeda_detik)
