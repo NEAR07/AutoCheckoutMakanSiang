@@ -43,6 +43,8 @@ jobs:
         PASSWORD_NIP_6: ${{ secrets.PASSWORD_NIP_6 }}
         LOGIN_NIP_7: ${{ secrets.LOGIN_NIP_7 }} #Dimas
         PASSWORD_NIP_7: ${{ secrets.PASSWORD_NIP_7 }}
+        LOGIN_NIP_8: ${{ secrets.LOGIN_NIP_8 }} #Dimas
+        PASSWORD_NIP_8: ${{ secrets.PASSWORD_NIP_8 }} #Agung L
 
 
     - name: Upload Bukti Error (Screenshot & Log)
