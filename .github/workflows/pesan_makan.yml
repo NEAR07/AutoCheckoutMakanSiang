@@ -45,7 +45,7 @@ jobs:
         PASSWORD_NIP_7: ${{ secrets.PASSWORD_NIP_7 }}
         LOGIN_NIP_8: ${{ secrets.LOGIN_NIP_8 }} #Agung L
         PASSWORD_NIP_8: ${{ secrets.PASSWORD_NIP_8 }}
-{{ secrets.LOGIN_NIP_9 }} #Adi
+        LOGIN_NIP_9: ${{ secrets.LOGIN_NIP_9 }} #Adi
         PASSWORD_NIP_9: ${{ secrets.PASSWORD_NIP_9 }} 
 
 
