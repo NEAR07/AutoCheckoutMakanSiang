@@ -46,7 +46,9 @@ jobs:
         LOGIN_NIP_8: ${{ secrets.LOGIN_NIP_8 }} #Agung L
         PASSWORD_NIP_8: ${{ secrets.PASSWORD_NIP_8 }}
         LOGIN_NIP_9: ${{ secrets.LOGIN_NIP_9 }} #Adi
-        PASSWORD_NIP_9: ${{ secrets.PASSWORD_NIP_9 }} 
+        PASSWORD_NIP_9: ${{ secrets.PASSWORD_NIP_9 }}
+        LOGIN_NIP_10: ${{ secrets.LOGIN_NIP_10 }} #Bambang
+        PASSWORD_NIP_10: ${{ secrets.PASSWORD_NIP_10 }} 
 
 
     - name: Upload Bukti Error (Screenshot & Log)
